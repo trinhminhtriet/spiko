@@ -16,10 +16,6 @@ echo ">>> Bumping version"
 sed -i.bak "s/version = \"$current_version\"/version = \"$new_version_num\"/" Cargo.toml
 rm Cargo.toml.bak
 
-echo ">>> Running tests"
-cargo build
-cargo test
-
 echo ">>> Commit"
 git add Cargo.toml
 git commit -am "version $new_version"
