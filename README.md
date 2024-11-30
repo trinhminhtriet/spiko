@@ -12,6 +12,8 @@
 
 Spiko is a fast, lightweight load testing tool built with Rust and powered by Tokio. It offers a clean and interactive TUI (Text User Interface) to provide real-time insights into your web application’s performance. Inspired by `trinhminhtriet/blast`, Spiko helps you simulate load and monitor the results in an intuitive and easy-to-understand interface.
 
+![Spiko](docs/images/demo.gif)
+
 ## ✨ Features
 
 - 🚀 High-performance load testing with minimal overhead
@@ -30,6 +32,9 @@ cd spiko
 
 cargo build --release
 cp ./target/release/spiko /usr/local/bin/
+spiko --version
+spiko --help
+spiko -n 1000 https://github.com
 ```
 
 Running the below command will globally install the `spiko` binary.
