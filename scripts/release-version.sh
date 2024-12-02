@@ -16,7 +16,7 @@ echo ">>> Bumping version"
 sed -i.bak "s/version = \"$current_version\"/version = \"$new_version_num\"/" Cargo.toml
 rm Cargo.toml.bak
 
-sleep 30
+sleep 5
 
 echo ">>> Commit"
 git add Cargo.toml Cargo.lock
