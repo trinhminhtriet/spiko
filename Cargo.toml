@@ -1,21 +1,21 @@
 [package]
+name = "spiko"
+version = "0.1.4"
 authors = ["Triet Trinh <contact@trinhminhtriet.com>"]
+edition = "2021"
+rust-version = "1.77"
+license = "MIT"
+description = "🚀 Spiko is a fast, Rust-based load testing tool with a beautiful TUI for real-time insights."
+readme = "README.md"
+repository = "https://github.com/trinhminhtriet/spiko"
+homepage = "https://trinhminhtriet.com"
+keywords = ["cli", "load-testing", "performance", "http"]
 categories = [
     "command-line-utilities",
     "network-programming",
     "web-programming::http-client",
     "development-tools::profiling",
 ]
-description = "🚀 Spiko is a fast, Rust-based load testing tool with a beautiful TUI for real-time insights."
-edition = "2021"
-keywords = ["cli", "load-testing", "performance", "http"]
-license = "MIT"
-name = "spiko"
-readme = "README.md"
-repository = "https://github.com/trinhminhtriet/spiko"
-homepage = "https://trinhminhtriet.com"
-version = "0.1.4"
-rust-version = "1.77"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
