@@ -409,7 +409,7 @@ async fn test_setting_basic_auth() {
             .unwrap()
             .to_str()
             .unwrap(),
-        "Basic aGF0b286cGFzcw=="
+        "Basic dHJpbmhtaW5odHJpZXQ6cGFzcw=="
     );
 
     let req = get_req("/", &["--http2", "-a", "trinhminhtriet:pass"]).await;
@@ -419,22 +419,22 @@ async fn test_setting_basic_auth() {
             .unwrap()
             .to_str()
             .unwrap(),
-        "Basic aGF0b286cGFzcw=="
+        "Basic dHJpbmhtaW5odHJpZXQ6cGFzcw=="
     );
 }
 
 #[tokio::test]
 async fn test_setting_host() {
-    let req = get_req("/", &["--host", "trinhminhtriet.io"]).await;
+    let req = get_req("/", &["--host", "trinhminhtriet.com"]).await;
     assert_eq!(
         req.headers().get("host").unwrap().to_str().unwrap(),
-        "trinhminhtriet.io"
+        "trinhminhtriet.com"
     );
 
-    let req = get_req("/", &["-H", "host:trinhminhtriet.io"]).await;
+    let req = get_req("/", &["-H", "host:trinhminhtriet.com"]).await;
     assert_eq!(
         req.headers().get("host").unwrap().to_str().unwrap(),
-        "trinhminhtriet.io"
+        "trinhminhtriet.com"
     );
 
     // You shouldn't set host header when using HTTP/2
