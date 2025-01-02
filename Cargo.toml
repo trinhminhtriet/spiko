@@ -1,6 +1,6 @@
 [package]
 name = "spiko"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Triet Trinh <contact@trinhminhtriet.com>"]
 edition = "2021"
 rust-version = "1.77"
