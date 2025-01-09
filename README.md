@@ -50,6 +50,16 @@ echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
+### 🐧Distro Packages
+
+#### Arch Linux
+
+If you are on Arch Linux, you can install `spiko` from the [official repositories](https://archlinux.org/packages/extra/x86_64/spiko/):
+
+```bash
+pacman -S spiko
+```
+
 ## 💡 Usage
 
 ```
