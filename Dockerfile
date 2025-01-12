@@ -1,6 +1,8 @@
 FROM rust:1.84.0-bookworm AS builder
 
-RUN apt-get update && apt-get install -y cmake libssl-dev pkg-config 
+RUN apt-get update && apt-get install -y clang cmake libssl-dev pkg-config 
+
+ENV LIBCLANG_PATH=/usr/lib/llvm-10/lib
 
 WORKDIR /app
 COPY . /app
