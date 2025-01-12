@@ -1,20 +1,16 @@
-ARG RUST_VERSION=1.79
-FROM docker.io/library/rust:${RUST_VERSION} AS build
+FROM rust:1.84.0-bookworm AS builder
+
 WORKDIR /app
 COPY . /app
 
-RUN apt-get update && apt-get install -y \
-    cmake \
-    && apt-get clean \
+RUN cargo build --release
+
+
+FROM debian:bookworm-slim
+
+RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
-RUN cargo install --path .
-RUN strip /usr/local/cargo/bin/spiko
+COPY --link --from=builder /app/target/release/spiko /usr/local/bin/spiko
 
-# Target image
-FROM registry.fedoraproject.org/fedora-minimal
-USER 65535
-
-COPY --chown=65535:65535 --from=build /usr/local/cargo/bin/spiko /bin/spiko
-
-ENTRYPOINT ["/bin/spiko"]
+ENTRYPOINT ["spiko"]

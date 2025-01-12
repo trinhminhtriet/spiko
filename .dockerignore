@@ -1,1 +1,7 @@
-target
+.git/
+.github/
+.vscode/
+
+docs/
+scripts/
+target/
