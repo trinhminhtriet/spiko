@@ -1,5 +1,7 @@
 FROM rust:1.84.0-bookworm AS builder
 
+RUN apt-get update && apt-get install -y cmake libssl-dev pkg-config 
+
 WORKDIR /app
 COPY . /app
 
