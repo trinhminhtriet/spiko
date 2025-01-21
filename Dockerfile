@@ -1,8 +1,16 @@
 FROM rust:1.84.0-bookworm AS builder
 
-RUN apt-get update && apt-get install -y clang cmake libssl-dev pkg-config 
+# Install dependencies including LLVM 14 first
+RUN apt-get update && apt-get install -y \
+    clang \
+    cmake \
+    libssl-dev \
+    pkg-config \
+    llvm-14 \
+    libclang-14-dev
 
-ENV LIBCLANG_PATH=/usr/lib/llvm-10/lib
+# Set LIBCLANG_PATH after LLVM 14 is installed
+ENV LIBCLANG_PATH=/usr/lib/llvm-14/lib
 
 WORKDIR /app
 COPY . /app
