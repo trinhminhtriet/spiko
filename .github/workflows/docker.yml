@@ -1,0 +1,62 @@
+name: Create and publish a Docker image
+
+on:
+  push:
+    tags:
+      - "v*"
+
+  pull_request:
+    types: [closed]
+
+env:
+  CARGO_TERM_COLOR: always
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+concurrency: build-docker-image
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        if: github.event_name == 'tag' || (github.ref == 'refs/heads/master' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'docker'))
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name == 'tag' || (github.ref == 'refs/heads/master' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'docker')) }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: |
+            linux/arm64
+            linux/amd64
+            linux/arm/v7
+          provenance: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
