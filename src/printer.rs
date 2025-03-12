@@ -12,17 +12,21 @@ use std::{
 
 #[derive(Clone, Copy)]
 struct StyleScheme {
-    color_enabled: bool,
+    style_enabled: bool,
 }
 impl StyleScheme {
-    fn no_color(self, text: &str) -> StyledContent<&str> {
-        text.reset()
+    fn no_style(self, text: &str) -> StyledContent<&str> {
+        StyledContent::new(crossterm::style::ContentStyle::new(), text)
     }
     fn heading(self, text: &str) -> StyledContent<&str> {
-        text.bold().underlined()
+        if self.style_enabled {
+            text.bold().underlined()
+        } else {
+            self.no_style(text)
+        }
     }
     fn success_rate(self, text: &str, success_rate: f64) -> StyledContent<&str> {
-        if self.color_enabled {
+        if self.style_enabled {
             if success_rate >= 100.0 {
                 text.green().bold()
             } else if success_rate >= 99.0 {
@@ -31,47 +35,51 @@ impl StyleScheme {
                 text.red().bold()
             }
         } else {
-            self.no_color(text).bold()
+            self.no_style(text)
         }
     }
     fn fastest(self, text: &str) -> StyledContent<&str> {
-        if self.color_enabled {
+        if self.style_enabled {
             text.green()
         } else {
-            self.no_color(text)
+            self.no_style(text)
         }
     }
     fn slowest(self, text: &str) -> StyledContent<&str> {
-        if self.color_enabled {
+        if self.style_enabled {
             text.yellow()
         } else {
-            self.no_color(text)
+            self.no_style(text)
         }
     }
     fn average(self, text: &str) -> StyledContent<&str> {
-        if self.color_enabled {
+        if self.style_enabled {
             text.cyan()
         } else {
-            self.no_color(text)
+            self.no_style(text)
         }
     }
 
     fn latency_distribution(self, text: &str, label: f64) -> StyledContent<&str> {
-        if self.color_enabled {
-            if label <= 0.3 {
+        // See #609 for justification of these thresholds
+        const LATENCY_YELLOW_THRESHOLD: f64 = 0.1;
+        const LATENCY_RED_THRESHOLD: f64 = 0.4;
+
+        if self.style_enabled {
+            if label <= LATENCY_YELLOW_THRESHOLD {
                 text.green()
-            } else if label <= 0.8 {
+            } else if label <= LATENCY_RED_THRESHOLD {
                 text.yellow()
             } else {
                 text.red()
             }
         } else {
-            self.no_color(text)
+            self.no_style(text)
         }
     }
 
     fn status_distribution(self, text: &str, status: StatusCode) -> StyledContent<&str> {
-        if self.color_enabled {
+        if self.style_enabled {
             if status.is_success() {
                 text.green()
             } else if status.is_client_error() {
@@ -82,35 +90,45 @@ impl StyleScheme {
                 text.white()
             }
         } else {
-            self.no_color(text)
+            self.no_style(text)
         }
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum PrintMode {
     Text,
     Json,
 }
 
-pub fn print_result<W: Write>(
-    w: &mut W,
-    mode: PrintMode,
+pub struct PrintConfig {
+    pub output: Box<dyn Write + Send + 'static>,
+    pub mode: PrintMode,
+    pub disable_style: bool,
+    pub stats_success_breakdown: bool,
+}
+
+pub fn print_result(
+    mut config: PrintConfig,
     start: Instant,
     res: &ResultData,
     total_duration: Duration,
-    disable_color: bool,
-    stats_success_breakdown: bool,
 ) -> anyhow::Result<()> {
-    match mode {
+    match config.mode {
         PrintMode::Text => print_summary(
-            w,
+            &mut config.output,
             res,
             total_duration,
-            disable_color,
-            stats_success_breakdown,
+            config.disable_style,
+            config.stats_success_breakdown,
         )?,
-        PrintMode::Json => print_json(w, start, res, total_duration, stats_success_breakdown)?,
+        PrintMode::Json => print_json(
+            &mut config.output,
+            start,
+            res,
+            total_duration,
+            config.stats_success_breakdown,
+        )?,
     }
     Ok(())
 }
@@ -360,11 +378,11 @@ fn print_summary<W: Write>(
     w: &mut W,
     res: &ResultData,
     total_duration: Duration,
-    disable_color: bool,
+    disable_style: bool,
     stats_success_breakdown: bool,
 ) -> std::io::Result<()> {
     let style = StyleScheme {
-        color_enabled: !disable_color,
+        style_enabled: !disable_style,
     };
     writeln!(w, "{}", style.heading("Summary:"))?;
     let success_rate = 100.0 * res.success_rate();
