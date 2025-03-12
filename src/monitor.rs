@@ -1,23 +1,18 @@
 use byte_unit::Byte;
-use crossterm::{
-    event::{Event, KeyCode, KeyEvent, KeyModifiers},
-    ExecutableCommand,
-};
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers};
 use hyper::http;
-use ratatui::crossterm;
+use ratatui::{DefaultTerminal, crossterm};
 use ratatui::{
-    backend::CrosstermBackend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Style},
     text::{Line, Span},
     widgets::{BarChart, Block, Borders, Gauge, Paragraph},
-    Terminal,
 };
-use std::{collections::BTreeMap, io};
+use std::collections::BTreeMap;
 
 use crate::{
     client::{ClientError, RequestResult},
-    printer::PrintMode,
+    printer::PrintConfig,
     result_data::{MinMaxMean, ResultData},
     timescale::{TimeLabel, TimeScale},
 };
@@ -53,7 +48,7 @@ impl ColorScheme {
 }
 
 pub struct Monitor {
-    pub print_mode: PrintMode,
+    pub print_config: PrintConfig,
     pub end_line: EndLine,
     /// All workers sends each result to this channel
     pub report_receiver: flume::Receiver<Result<RequestResult, ClientError>>,
@@ -62,36 +57,26 @@ pub struct Monitor {
     // Frame per second of TUI
     pub fps: usize,
     pub disable_color: bool,
-    pub stats_success_breakdown: bool,
 }
 
 struct IntoRawMode;
 
 impl IntoRawMode {
-    pub fn new() -> Result<Self, std::io::Error> {
-        crossterm::terminal::enable_raw_mode()?;
-        io::stdout().execute(crossterm::terminal::EnterAlternateScreen)?;
-        io::stdout().execute(crossterm::cursor::Hide)?;
-        Ok(IntoRawMode)
+    pub fn new() -> Result<(Self, DefaultTerminal), std::io::Error> {
+        let terminal = ratatui::try_init()?;
+        Ok((Self, terminal))
     }
 }
 
 impl Drop for IntoRawMode {
     fn drop(&mut self) {
-        let _ = crossterm::terminal::disable_raw_mode();
-        let _ = io::stdout().execute(crossterm::terminal::LeaveAlternateScreen);
-        let _ = io::stdout().execute(crossterm::cursor::Show);
+        ratatui::restore();
     }
 }
 
 impl Monitor {
-    pub async fn monitor(self) -> Result<ResultData, std::io::Error> {
-        let raw_mode = IntoRawMode::new()?;
-
-        let mut terminal = {
-            let backend = CrosstermBackend::new(io::stdout());
-            Terminal::new(backend)?
-        };
+    pub async fn monitor(self) -> Result<(ResultData, PrintConfig), std::io::Error> {
+        let (raw_mode, mut terminal) = IntoRawMode::new()?;
 
         // Return this when ends to application print summary
         // We must not read all data from this due to computational cost.
@@ -432,15 +417,13 @@ impl Monitor {
                         modifiers: KeyModifiers::CONTROL,
                         ..
                     }) => {
+                        drop(terminal);
                         drop(raw_mode);
                         let _ = crate::printer::print_result(
-                            &mut std::io::stdout(),
-                            self.print_mode,
+                            self.print_config,
                             self.start,
                             &all,
                             now - self.start,
-                            self.disable_color,
-                            self.stats_success_breakdown,
                         );
                         std::process::exit(libc::EXIT_SUCCESS);
                     }
@@ -454,6 +437,6 @@ impl Monitor {
                 tokio::time::sleep(per_frame - elapsed).await;
             }
         }
-        Ok(all)
+        Ok((all, self.print_config))
     }
 }
