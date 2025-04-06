@@ -1,6 +1,6 @@
 [package]
 name = "spiko"
-version = "0.1.13"
+version = "0.1.14"
 authors = ["Triet Trinh <contact@trinhminhtriet.com>"]
 edition = "2021"
 license = "MIT"
