@@ -28,6 +28,7 @@ build:
 	ln -sf $(PWD)/target/release/$(NAME) /usr/local/bin/$(NAME)
 	which $(NAME)
 	$(NAME) --version
+	$(NAME) --help
 
 build_debug:
 	@echo "Building debug"
