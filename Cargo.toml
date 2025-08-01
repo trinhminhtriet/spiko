@@ -82,7 +82,7 @@ rlimit = "0.10.1"
 
 [dev-dependencies]
 assert_cmd = "2.0.17"
-axum = { version = "0.8.3", features = ["http2"] }
+axum = { version = "0.8.4", features = ["http2"] }
 axum-server = { version = "0.7.2", features = ["tls-rustls"] }
 bytes = "1.6"
 float-cmp = "0.10.0"
