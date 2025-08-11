@@ -25,10 +25,9 @@ test:
 build:
 	@echo "Building release: $(VERSION)"
 	@cargo build --release
-	ln -sf $(PWD)/target/release/$(NAME) /usr/local/bin/$(NAME)
+	ln -sf $(PWD)/target/release/$(NAME) $(HOME)/.local/bin/$(NAME)
 	which $(NAME)
 	$(NAME) --version
-	$(NAME) --help
 
 build_debug:
 	@echo "Building debug"
