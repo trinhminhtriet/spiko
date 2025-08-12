@@ -28,3 +28,4 @@ git tag $tag_name
 echo ">>> Publish"
 git push
 git push origin $tag_name
+echo ">>> Done"
