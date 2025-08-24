@@ -174,7 +174,7 @@ We welcome contributions!
 
 Once your pull request has been merged, you can delete your branch.
 
-## 🙏 Credits
+## 🙏 Acknowledgements
 
 - [hatoo/oha](https://github.com/hatoo/oha)
 
