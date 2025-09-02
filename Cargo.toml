@@ -72,7 +72,7 @@ hyper-util = { version = "0.1.16", features = ["tokio"] }
 tokio-vsock = { version = "0.7.1", optional = true }
 rusqlite = { version = "0.37.0", features = ["bundled"] }
 num_cpus = "1.17.0"
-tokio-util = "0.7.15"
+tokio-util = "0.7.16"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = "0.6"
