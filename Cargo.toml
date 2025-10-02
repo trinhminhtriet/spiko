@@ -68,7 +68,7 @@ rand_regex = "0.18.1"
 regex-syntax = "0.8.5"
 url = "2.5.2"
 http-body-util = "0.1.2"
-hyper-util = { version = "0.1.16", features = ["tokio"] }
+hyper-util = { version = "0.1.17", features = ["tokio"] }
 tokio-vsock = { version = "0.7.1", optional = true }
 rusqlite = { version = "0.37.0", features = ["bundled"] }
 num_cpus = "1.17.0"
