@@ -1616,9 +1616,9 @@ dependencies = [
 
 [[package]]
 name = "http-mitm-proxy"
-version = "0.14.0"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe7913b4b5a2d962c0594c17742052fefe0047c8179de687a64dff3995090207"
+checksum = "da94bb49ccee87ff5436becfff1a88876cca2e1653c915d643c03349cdb5b5f9"
 dependencies = [
  "bytes",
  "futures",
@@ -1626,7 +1626,7 @@ dependencies = [
  "hyper",
  "hyper-util",
  "moka",
- "rcgen",
+ "rcgen 0.14.5",
  "thiserror 2.0.12",
  "tokio",
  "tokio-rustls",
@@ -2739,6 +2739,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "rcgen"
+version = "0.14.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5fae430c6b28f1ad601274e78b7dffa0546de0b73b4cd32f46723c0c2a16f7a5"
+dependencies = [
+ "pem",
+ "ring",
+ "rustls-pki-types",
+ "time",
+ "yasna",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.5.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3361,7 +3374,7 @@ dependencies = [
  "rand_core 0.9.3",
  "rand_regex",
  "ratatui",
- "rcgen",
+ "rcgen 0.13.2",
  "regex",
  "regex-syntax 0.8.5",
  "rlimit",
